@@ -253,7 +253,59 @@ When generating or extending this project, ensure:
 - JUnit 5 for testing (not Spock)
 - All necessary runtime dependencies including YAML support
 - Kotlin coroutines support for async operations
+- Service-specific API prefix (e.g., `/medication`) instead of generic `/api/v1`
+- CORS configuration for Vite (5173), React (3000), Angular (4200), and Vue (8080)
 - Complete dependency list with no missing runtime requirements"
+
+## Design Decisions
+
+### API Design
+- **Service-specific prefix**: Use `/medication` instead of `/api/v1` to avoid routing conflicts with other services
+- **Frontend compatibility**: Patient service uses `/patients`, medication service uses `/medication/patients/{id}/administrations`
+- **Clear separation**: Each microservice has its own URL namespace for better service isolation
+
+### CORS Configuration
+- **Vite support**: Added `http://localhost:5173` for Vite development server
+- **Complete frontend coverage**: Supports React (3000), Angular (4200), Vite (5173), and Vue (8080)
+- **Development-friendly**: All common frontend development ports included by default
+
+### Environment Configuration
+- **Strict test isolation**: Production beans use `@Requires(notEnv = ["test"])`
+- **Test-specific implementations**: Test beans use `@Requires(env = ["test"])`
+- **No external dependencies in tests**: All tests run with in-memory implementations
+
+### DynamoDB Access Patterns
+- **Primary access**: Query by patient ID using main table
+- **GSI1**: Query administrations by prescription ID
+- **GSI2**: Query administrations by date for reporting
+- **Proper key design**: Follows single-table design patterns for optimal performance
+
+### Healthcare Compliance
+- **Audit logging**: Separate audit appender for compliance requirements
+- **Immutable records**: Administration records cannot be deleted, only status updated
+- **Type safety**: Strong typing with value classes for all domain identifiers
+
+## Implementation Lessons Learned
+
+### API Routing Conflicts
+- **Problem**: Using generic `/api/v1` prefix can cause routing conflicts when multiple services run on same port
+- **Solution**: Use service-specific prefixes (e.g., `/medication`, `/patients`) for clear service boundaries
+- **Benefit**: Each service has its own namespace, preventing route collisions
+
+### Frontend Development Support
+- **Problem**: Default CORS configurations often miss modern development servers like Vite
+- **Solution**: Proactively include all major frontend development ports in CORS configuration
+- **Ports to include**: React (3000), Angular (4200), Vite (5173), Vue (8080)
+
+### Test Environment Isolation
+- **Problem**: DynamoDB and other production dependencies cause test failures without external services
+- **Solution**: Use `@Requires(env = ["test"])` for test implementations and `@Requires(notEnv = ["test"])` for production
+- **Result**: Tests run completely isolated with in-memory implementations
+
+### Essential Dependencies
+- **snakeyaml**: Required for YAML configuration parsing, often forgotten
+- **kotlinx-coroutines-core**: Needed for suspend functions in repositories
+- **logback-classic**: Provides actual logging implementation for SLF4J
 
 ## Notes
 
@@ -261,4 +313,6 @@ When generating or extending this project, ensure:
 - All medication-related features must be implemented with safety as the highest priority
 - Test isolation is critical - never allow production dependencies in test environment
 - Consider healthcare interoperability standards from the beginning
+- API endpoints use `/medication` prefix to avoid conflicts with other healthcare services
+- CORS is configured for all major frontend development frameworks
 - Update this file as development progresses to reflect actual project structure and commands
