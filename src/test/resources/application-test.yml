@@ -1,0 +1,24 @@
+micronaut:
+  application:
+    name: medication-administration-service-test
+  server:
+    port: -1  # Random port for tests
+  environments: test
+
+datasources:
+  default:
+    # No external datasource for tests - using in-memory implementations
+
+logging:
+  level:
+    com.healthcare.medication: DEBUG
+    root: WARN
+
+healthcare:
+  medication:
+    audit:
+      enabled: false  # Simplified for tests
+    compliance:
+      hipaa-enabled: false  # Relaxed for unit tests
+    safety:
+      double-check-required: false  # Simplified for tests
