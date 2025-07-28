@@ -25,6 +25,9 @@ logs/
 .env.local
 .env.production
 
+# Micronaut test resources (temporary port files)
+.micronaut/test-resources/
+
 # Healthcare sensitive data
 patient-data/
 test-data/
