@@ -16,8 +16,7 @@ class DynamoDbConfiguration {
     fun dynamoDbClient(): DynamoDbClient {
         return DynamoDbClient.builder()
             .region(Region.US_EAST_1)
-            // For local development, you can uncomment this line:
-            // .endpointOverride(URI.create("http://localhost:8000"))
+            .endpointOverride(URI.create("http://localhost:8000"))
             .build()
     }
     

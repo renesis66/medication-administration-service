@@ -101,8 +101,31 @@ http://localhost:8080/medication
 
 ## Getting Started
 
-### Run the Application
+### Prerequisites
+- Docker (for DynamoDB-local)
+- Java 17+
+- AWS CLI (for table creation)
+
+### Quick Start
 ```bash
+# Set up local development environment (starts DynamoDB-local and creates tables)
+./scripts/setup-local-dev.sh
+
+# Run the application
+./gradlew run
+```
+
+### Manual Setup
+If you prefer to set up manually:
+
+```bash
+# Start DynamoDB-local
+docker-compose up -d dynamodb-local
+
+# Create the administrations table
+./scripts/create-dynamodb-table.sh
+
+# Run the application
 ./gradlew run
 ```
 
@@ -116,4 +139,11 @@ http://localhost:8080/medication
 ./gradlew build
 ```
 
+### Stop Local Services
+```bash
+docker-compose down
+```
+
 The service will start on port 8080 with CORS enabled for frontend development.
+
+**DynamoDB-local** runs on port 8000 and persists data in `./docker/dynamodb/` directory.
