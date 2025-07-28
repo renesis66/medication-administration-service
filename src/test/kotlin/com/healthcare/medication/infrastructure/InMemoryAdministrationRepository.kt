@@ -32,7 +32,7 @@ class InMemoryAdministrationRepository : AdministrationRepository {
     
     override suspend fun findByDate(date: LocalDate): List<MedicationAdministration> {
         return administrations.values.filter { administration ->
-            val administrationDate = administration.scheduledTime.atOffset(ZoneOffset.UTC).toLocalDate()
+            val administrationDate = administration.scheduledTime.atZone(java.time.ZoneId.systemDefault()).toLocalDate()
             administrationDate == date
         }
     }
