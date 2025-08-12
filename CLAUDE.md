@@ -16,6 +16,73 @@ This project uses Gradle with Kotlin and Micronaut framework.
 - `./gradlew run` - Run the application locally
 - `./gradlew clean` - Clean build artifacts
 
+### Service Startup Commands
+To start the service and its dependencies:
+
+#### 1. Start Docker/Rancher Desktop (if using Rancher Desktop)
+```bash
+open -a "Rancher Desktop"
+# Wait for Rancher Desktop to fully initialize (30-60 seconds)
+# Check if ready: docker ps
+```
+
+#### 2. Start DynamoDB Local
+```bash
+# Remove old container if exists
+docker rm dynamodb-local
+
+# Start DynamoDB Local
+docker-compose up -d
+
+# Verify it's running
+curl -s http://localhost:8000 | head -5
+```
+
+#### 3. Create Database Table
+```bash
+# Create administrations table with GSI indexes
+./scripts/create-dynamodb-table.sh
+```
+
+#### 4. Start the Service
+```bash
+# Check if port 8080 is in use
+lsof -i :8080
+
+# Kill existing process if needed
+kill <PID>
+
+# Start the service
+./gradlew run
+```
+
+#### 5. Verify Service is Running
+```bash
+# Test an endpoint (should return error but confirms service is responding)
+curl -s http://localhost:8080/medication/patients/test/administrations
+```
+
+### Troubleshooting Docker Issues
+Common Docker issues and solutions:
+
+1. **Docker daemon not running:**
+   ```bash
+   docker context ls
+   docker context use desktop-linux  # For Rancher Desktop
+   ```
+
+2. **Container name conflicts:**
+   ```bash
+   docker rm dynamodb-local
+   docker-compose up -d
+   ```
+
+3. **Port 8080 already in use:**
+   ```bash
+   lsof -i :8080
+   kill <PID>
+   ```
+
 ## Required Dependencies
 
 ### Core Runtime Dependencies
