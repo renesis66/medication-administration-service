@@ -102,7 +102,7 @@ http://localhost:8080/medication
 ## Getting Started
 
 ### Prerequisites
-- Docker (for DynamoDB-local)
+- Docker or Rancher Desktop (for DynamoDB-local)
 - Java 17+
 - AWS CLI (for table creation)
 
@@ -116,18 +116,63 @@ http://localhost:8080/medication
 ```
 
 ### Manual Setup
-If you prefer to set up manually:
+If you prefer to set up manually or encounter Docker issues:
 
+#### Step 1: Start Docker/Rancher Desktop
+If using Rancher Desktop:
 ```bash
-# Start DynamoDB-local
-docker-compose up -d dynamodb-local
+open -a "Rancher Desktop"
+# Wait for Rancher Desktop to fully start (may take 30-60 seconds)
+```
 
-# Create the administrations table
+#### Step 2: Start DynamoDB Local
+```bash
+# Remove any existing containers if needed
+docker rm dynamodb-local
+
+# Start DynamoDB-local
+docker-compose up -d
+
+# Verify DynamoDB is running
+curl -s http://localhost:8000 | head -5
+```
+
+#### Step 3: Create Database Table
+```bash
+# Create the administrations table with GSI indexes
 ./scripts/create-dynamodb-table.sh
+```
+
+#### Step 4: Start the Service
+```bash
+# If port 8080 is in use, kill the process first
+lsof -i :8080  # Check what's using port 8080
+kill <PID>     # Kill the process if needed
 
 # Run the application
 ./gradlew run
 ```
+
+### Troubleshooting Docker Issues
+If you encounter Docker daemon connection errors:
+
+1. **Check Docker Context:**
+   ```bash
+   docker context ls
+   docker context use desktop-linux  # If using Rancher Desktop
+   ```
+
+2. **Verify Docker is Running:**
+   ```bash
+   docker ps  # Should show running containers
+   ```
+
+3. **Alternative DynamoDB Setup:**
+   If Docker continues to have issues, you can run DynamoDB Local directly:
+   ```bash
+   # Download DynamoDB Local JAR and run directly
+   java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+   ```
 
 ### Run Tests
 ```bash
